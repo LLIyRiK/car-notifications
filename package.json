@@ -5,10 +5,11 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "node ./dist/index.js",
+    "start-both": "concurrently \"node ./dist/index.js\" \"cd web && npm start\"",
     "debug": "node --inspect=5858 -r ts-node/register src/index.ts",
-    "serve": "nodemon",
+    "serve": "nodemon --exec npm run debug",
     "build-ts": "tsc",
-    "postinstall": "npm run build-ts",
+    "postinstall": "concurrently \"npm run build-ts\" \"cd web && npm install\"",
     "watch-ts": "tsc -w"
   },
   "author": "",
@@ -28,7 +29,9 @@
   },
   "dependencies": {
     "@hapi/hapi": "^18.3.2",
+    "@hapi/inert": "^5.2.1",
     "@types/mongoose": "^5.5.17",
+    "concurrently": "^4.1.2",
     "mongoose": "^5.6.12",
     "request": "^2.88.0",
     "ts-mongoose": "0.0.19",

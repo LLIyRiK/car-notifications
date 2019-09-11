@@ -1,4 +1,5 @@
 import * as Hapi from '@hapi/hapi';
+import * as Inert from '@hapi/inert';
 import * as Mongoose from "mongoose";
 import {loadOnlinerCars} from "./services/cars.service";
 import {Connection} from "mongoose";
@@ -12,13 +13,15 @@ export default class Server {
     private static app: Hapi.Server;
     public static db: Mongoose.Connection;
 
-    static  start() {
+    static  async start() {
         Server.app =  Hapi.server({
-            host: 'localhost',
-            port: 4000
+            host: process.env.HOST || '0.0.0.0',
+            port: process.env.PORT || 4000
         });
 
-        Mongoose.connect('mongodb://localhost/advertisementsCars', { useNewUrlParser: true });
+        await Server.app.register(Inert);
+
+        await Mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/advertisementsCars', { useNewUrlParser: true });
         Server.db = Mongoose.connection;
         Server.db.on('error', (err) => console.error('connection error:', err));
         Server.db.once('open', () => {
@@ -28,8 +31,8 @@ export default class Server {
         Server.app.route({
             method: 'GET',
             path: '/',
-            handler: (request, h) => {
-                return 'Hello, world!';
+            handler: {
+                file: './web/dist/index.html'
             }
         });
 
