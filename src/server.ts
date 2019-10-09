@@ -61,12 +61,12 @@ export default class Server {
             config: {
                 validate: {
                     payload: {
-                        telegramId: Joi.number.required(),
-                        manufacture: Joi.string.required(),
-                        model: Joi.string.required(),
-                        yearFrom: Joi.number.optional(),
-                        yearTo: Joi.number.optional(),
-                        odometerState: Joi.number.optional()
+                        telegramId: Joi.number().required(),
+                        manufacture: Joi.string().required(),
+                        model: Joi.string().required(),
+                        yearFrom: Joi.number().optional(),
+                        yearTo: Joi.number().optional(),
+                        odometerState: Joi.number().optional()
                     }
                 },
                 handler: async (request, reply) => {
@@ -82,7 +82,7 @@ export default class Server {
             config: {
                 validate: {
                     params: {
-                        id: Joi.number.required()
+                        id: Joi.number().required()
                     }
                 },
                 handler: async (request, reply) => {
