@@ -62,10 +62,45 @@ export const loadOnlinerCars = (pageNumber = 1) => {
     });
 };
 
+export const carsByFiltres = (filters): Promise<any[]> => {
+    return new Promise((resolve,rejects) => {
 
-export const carsByFiltres = (filters) => {
+        filters = filters.map((f: any) => {
+            return {
+                $and: {
+                    manufacturerName: f.manufacture,
+                    model: f.model,
+                    year: {$gte: (f.yearFrom || null), $lte: (f.yearTo || null)},
+                    odometerState: f.odometerState,
+                    isShown: false
+                }
+            }
+        });
 
+        Cars.find({$or: filters}, (err, f: any) => {
+            if (err) {
+                rejects(err);
+            } else {
+                resolve(f);
+            }
+        });
+    });
 };
+
+export const markAsShown = (carIds): Promise<any[]> => {
+    return new Promise((resolve,rejects) => {
+
+        Cars.updateMany({carId: {$in: carIds}}, {isShown: true},(err, f: any) => {
+            if (err) {
+                rejects(err);
+            } else {
+                resolve(f);
+            }
+        });
+    });
+};
+
+
 
 
 

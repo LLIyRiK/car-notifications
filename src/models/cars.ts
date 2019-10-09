@@ -14,7 +14,8 @@ const CarsSchema = new Schema({
     lastTimeUp: Date,
     title: String,
     domain: String,
-    advertisementLink: String
+    advertisementLink: String,
+    isShown: { type: Boolean, default: false }
 });
 
 export default mongoose.model('Cars', CarsSchema)
