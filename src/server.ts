@@ -6,6 +6,7 @@ import * as TelegramBot from "node-telegram-bot-api";
 import {carsByFiltres, loadOnlinerCars, markAsShown} from "./services/cars.service";
 import {getActiveUsers, notifiUser} from "./services/user.service";
 import {addNew, deleteFilter, getUserFilters} from "./services/filter.service";
+process.env.NTBA_FIX_319 = '1';
 
 // https://github.com/yagop/node-telegram-bot-api/blob/master/examples/webhook/heroku.js
 const TOKEN = process.env.TELEGRAM_TOKEN ;
@@ -121,19 +122,22 @@ export default class Server {
         };
 
         const url = process.env.APP_URL || 'https://car-notification.herokuapp.com/';
-        Server.bot = new TelegramBot(TOKEN, options);
+        try {
+            Server.bot = new TelegramBot(TOKEN, options);
 
+            // This informs the Telegram servers of the new webhook.
+            // Note: we do not need to pass in the cert, as it already provided
+            Server.bot.setWebHook(`${url}/bot${TOKEN}`);
 
-        // This informs the Telegram servers of the new webhook.
-        // Note: we do not need to pass in the cert, as it already provided
-        Server.bot.setWebHook(`${url}/bot${TOKEN}`);
+            // Just to ping!
+            Server.bot.on('message', function onMessage(msg) {
+                console.log(msg);
+                Server.bot.sendMessage(msg.chat.id, 'I am alive on Heroku!');
+            });
+        } catch (e) {
+            console.log(e);
+        }
 
-
-        // Just to ping!
-        Server.bot.on('message', function onMessage(msg) {
-            console.log(msg);
-            Server.bot.sendMessage(msg.chat.id, 'I am alive on Heroku!');
-        });
 
 
 
